@@ -1,6 +1,6 @@
 {
   "name": "react-import-style",
-  "version": "0.1.1",
+  "version": "1.0.1",
   "description": "React hoc, use for combine style.",
   "main": "ImportStyle.js",
   "scripts": {
