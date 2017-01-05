@@ -1,56 +1,67 @@
 import React, { Component } from 'react'
 
 /*
-ImportStyle         适用于Page内部的组件
-ImportStyleInComponent  适用于Page、Layout
-ImportStyleRoot     适用于Page、Layout
+ImportStyle         适用于普通组件
+ImportStyleRoot     适用于最外层组件
 */
+
+class StyleContainer extends Component {
+
+    static contextTypes = {
+        appendStyle: React.PropTypes.func,
+        getStyle: React.PropTypes.func
+    }
+
+    render () {
+        const styles = this.context.getStyle()
+
+        let styleTags = []
+        for(let name in styles){
+            let id = name
+            let s = styles[name].css
+                s = s.substr(1, s.length)
+                s = s.substr(0, s.length - 1)
+
+            styleTags.push(
+                <style key={id} id={id}>{s}</style>
+            )
+        }
+
+        return (
+            <div id="styleCollection">{styleTags}</div>
+        )
+    }
+}
 
 export const ImportStyle = (styles) => (StyleWrappedComponent) => {
 
     class ImportStyle extends Component {
 
         static contextTypes = {
-            appendStyle: React.PropTypes.func
+            appendStyle: React.PropTypes.func,
+            removeStyle: React.PropTypes.func
         }
 
         constructor (props, context) {
             super(props, context)
 
             this.state = {}
-            this.needAppendStyleTag = []
+            this.classNameList = []
+            this.styles = {}
         }
 
         componentWillMount () {
 
-            // styles = stylesHandle(styles)
             styles = stylesHandleWapperCssLoader(styles)
+            styles.forEach((style) => {
+                this.classNameList.push(style.wrapper)
+            })
 
-            let stylesheet = {},
-                style = '',
-                key = '',
-                styleKeyList = [],
-                needAppendStyleKeyList = [],
-                i = 0,
-                count = styles.length
+            this.context.appendStyle(styles)
+        }
 
-            for (;i < count;i++) {
-                style = styles[i]
-                key = style.wapper
-                stylesheet[key] = style.css
-                styleKeyList.push(key)
-            }
-
-            needAppendStyleKeyList = this.context.appendStyle(styleKeyList)
-
-            for (i = 0; i < needAppendStyleKeyList.length; i++) {
-                key = needAppendStyleKeyList[i]
-                style = stylesheet[key]
-                this.needAppendStyleTag.push(
-                    <style key={key}>{style}</style>
-                )
-            }
-
+        componentDidMount () {
+            this.context.removeStyle(styles)
         }
 
         render () {
@@ -61,8 +72,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             }
 
             return (
-                <StyleWrappedComponent {...props}>
-                    {this.needAppendStyleTag}
+                <StyleWrappedComponent {...props} className={this.classNameList.join(' ')}>
                     {this.props.children}
                 </StyleWrappedComponent>
             )
@@ -72,86 +82,74 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
     return ImportStyle
 }
 
-export const ImportStyleInComponent = (styles) => (StyleWrappedComponent) => {
-
-    class ImportStyleInComponent extends Component {
-
-        constructor (props, context) {
-            super(props, context)
-
-            this.state = {}
-            this.stylesheetTags = []
-            this.wapperClasses = []
-        }
-
-        componentWillMount () {
-
-            styles = stylesHandleWapperCssLoader(styles)
-            this.stylesheetTags = styles.map((style, i) => {
-                this.wapperClasses.push(style.wapper)
-
-                // 去掉前后双引号
-                let s = style.css
-                s = s.substr(1, s.length)
-                s = s.substr(0, s.length - 1)
-
-                return (<style dangerouslySetInnerHTML={{__html: s}} key={i}></style>)
-            })
-        }
-
-        render () {
-
-            const props = {
-                ...this.props,
-                ...this.state
-            }
-
-            return (
-                <div className={this.wapperClasses.join(' ')}>
-                    <StyleWrappedComponent {...props}>
-                        {this.stylesheetTags}
-                        {this.props.children}
-                    </StyleWrappedComponent>
-                </div>
-            )
-        }
-    }
-
-    return ImportStyleInComponent
-}
-
 export const ImportStyleRoot = () => (StyleWrappedComponent) => {
 
     class ImportStyleRoot extends Component {
 
-
         constructor (props) {
             super(props)
 
-            this.styleKeyList = []
+            // this.styleKeyList = []
+            // this.styleList = {}
+            this.styleMap = {}
+            // this.styleCounter = {}
+
+            this.checkAndWriteStyleToHeadTag = () => {
+                for( let key in this.styleMap){
+                    let styleObj = this.styleMap[key]
+                    if(styleObj.ref > 0){
+                        // 配置样式
+                        if(!document.getElementById(key)){
+                            let styleTag = document.createElement('style').innerHTML(styleObj.css)
+                            document.getElementsByTagName('head')[0].append(styleTag)
+                        }
+                    } else {
+                        // 移除样式
+                        if(document.getElementById(key)){
+                            document.getElementById(key).remove()
+                        }
+                    }
+                }
+            }
         }
 
 
         static childContextTypes = {
-            appendStyle: React.PropTypes.func
+            appendStyle: React.PropTypes.func,
+            removeStyle: React.PropTypes.func,
+            getStyle: React.PropTypes.func
         }
 
         getChildContext = function () {
             return {
-                appendStyle: (styleKeyList) => {
-
-                    let needToAppendKeyList = []
-
-                    for (let i = 0; i < styleKeyList.length; i++) {
-                        let checkKey = styleKeyList[i]
-                        // 不存在
-                        if (this.styleKeyList.indexOf(checkKey) <= -1) {
-                            needToAppendKeyList.push(checkKey)
-                            this.styleKeyList.push(checkKey)
+                appendStyle: (styles) => {
+                    styles.forEach((style) => {
+                        
+                        if(!this.styleMap[style.wrapper]){
+                            this.styleMap[style.wrapper] = {
+                                css: style.css,
+                                ref: 1
+                            }
+                        }else{
+                            // 样式引用计数
+                            this.styleMap[style.wrapper].ref ++
                         }
-                    }
+                    })
 
-                    return needToAppendKeyList
+                    __CLIENT__ && this.checkAndWriteStyleToHeadTag()
+                },
+                removeStyle: (styles) => {
+                    styles.forEach((style) => {
+                        
+                        // 引用计数减少
+                        if(this.styleMap[style.wrapper]){
+                            this.styleMap[style.wrapper].ref --
+                        }
+
+                    })
+                },
+                getStyle: () => {
+                    return this.styleMap
                 }
             }
         }
@@ -165,6 +163,7 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
             return (
                 <StyleWrappedComponent {...props}>
                     {this.props.children}
+                    { __SERVER__ && <StyleContainer />}
                 </StyleWrappedComponent>
             )
         }
