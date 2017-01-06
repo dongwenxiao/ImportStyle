@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import hoistStatics from 'hoist-non-react-statics'
 
 /*
 ImportStyle         适用于普通组件
@@ -79,7 +80,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
         }
     }
 
-    return ImportStyle
+    return hoistStatics(ImportStyle, StyleWrappedComponent)
 }
 
 export const ImportStyleRoot = () => (StyleWrappedComponent) => {
