@@ -19,9 +19,7 @@ class StyleContainer extends Component {
         let styleTags = []
         for(let name in styles){
             let id = name
-            let s = styles[name].css
-                s = s.substr(1, s.length)
-                s = s.substr(0, s.length - 1)
+            let s = removeStyleDot(styles[name].css)
 
             styleTags.push(
                 <style key={id} id={id}>{s}</style>
@@ -61,7 +59,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             this.context.appendStyle(styles)
         }
 
-        componentDidMount () {
+        componentWillUnmount () {
             this.context.removeStyle(styles)
         }
 
@@ -90,18 +88,18 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
         constructor (props) {
             super(props)
 
-            // this.styleKeyList = []
-            // this.styleList = {}
             this.styleMap = {}
-            // this.styleCounter = {}
 
             this.checkAndWriteStyleToHeadTag = () => {
+
                 for( let key in this.styleMap){
                     let styleObj = this.styleMap[key]
                     if(styleObj.ref > 0){
                         // 配置样式
                         if(!document.getElementById(key)){
-                            let styleTag = document.createElement('style').innerHTML(styleObj.css)
+                            let styleTag = document.createElement('style')
+                            styleTag.innerHTML = removeStyleDot(styleObj.css)
+                            styleTag.setAttribute('id', key)
                             document.getElementsByTagName('head')[0].append(styleTag)
                         }
                     } else {
@@ -188,3 +186,6 @@ const stylesHandleWapperCssLoader = (styles) => {
 
     throw 'stylesHandleWapperCssLoader() styles type must be array or object'
 }
+
+// 删除样式字符前后引号
+const removeStyleDot = (css) => css.substr(1, css.length - 2)
