@@ -100,7 +100,7 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
                             let styleTag = document.createElement('style')
                             styleTag.innerHTML = removeStyleDot(styleObj.css)
                             styleTag.setAttribute('id', key)
-                            document.getElementsByTagName('head')[0].append(styleTag)
+                            document.getElementsByTagName('head')[0].appendChild(styleTag)
                         }
                     } else {
                         // 移除样式
