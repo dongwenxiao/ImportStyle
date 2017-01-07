@@ -16,18 +16,15 @@ class StyleContainer extends Component {
     render () {
         const styles = this.context.getStyle()
 
-        let styleTags = []
+        let styleTagsString = ''
         for(let name in styles){
             let id = name
             let s = removeStyleDot(styles[name].css)
-
-            styleTags.push(
-                <style key={id} id={id}>{s}</style>
-            )
+            styleTagsString += `<style id=${id}>${s}</style>`
         }
 
         return (
-            <div id="styleCollection">{styleTags}</div>
+            <div id="styleCollection" dangerouslySetInnerHTML={{__html: styleTagsString}}></div>
         )
     }
 }
