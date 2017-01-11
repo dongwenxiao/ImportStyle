@@ -185,4 +185,6 @@ const stylesHandleWapperCssLoader = (styles) => {
 }
 
 // 删除样式字符前后引号
-const removeStyleDot = (css) => css.substr(1, css.length - 2)
+// const removeStyleDot = (css) => css.substr(1, css.length - 2)
+// 新版本的 wapper-style-loader 已经调，不需要做这步处理
+const removeStyleDot = (css) => css
