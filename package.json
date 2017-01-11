@@ -1,7 +1,7 @@
 {
   "name": "sp-css-import",
   "version": "1.0.0",
-  "description": "React hoc, use for combine style.",
+  "description": "Decorator of react component for load css.",
   "main": "ImportStyle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/dongwenxiao/sp-css-import",
   "dependencies": {
-    "react": "~15.4.1"
+
   }
 }
