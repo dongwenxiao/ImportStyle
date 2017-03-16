@@ -72,6 +72,10 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
                 this.classNameList.push(style.wrapper)
             })
 
+            if (this.props.className) {
+                this.classNameList.push(this.props.className)
+            }
+
             this.context.appendStyle(styles)
         }
 
