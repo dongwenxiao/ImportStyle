@@ -1,6 +1,6 @@
 {
   "name": "sp-css-import",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Decorator of react component for load css.",
   "main": "ImportStyle.js",
   "scripts": {
@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/dongwenxiao/sp-css-import",
   "dependencies": {
-
+    "react": "~15.5.4",
+    "prop-types": "~15.5.10",
+    "hoist-non-react-statics": "~1.2.0"
   }
 }

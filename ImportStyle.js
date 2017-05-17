@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import hoistStatics from 'hoist-non-react-statics'
 
 /*
@@ -28,8 +29,8 @@ if (__CLIENT__) {
 class StyleContainer extends Component {
 
     static contextTypes = {
-        appendStyle: React.PropTypes.func,
-        getStyle: React.PropTypes.func
+        appendStyle: PropTypes.func,
+        getStyle: PropTypes.func
     }
 
     render () {
@@ -53,8 +54,8 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
     class ImportStyle extends Component {
 
         static contextTypes = {
-            appendStyle: React.PropTypes.func,
-            removeStyle: React.PropTypes.func
+            appendStyle: PropTypes.func,
+            removeStyle: PropTypes.func
         }
 
         constructor (props, context) {
@@ -134,9 +135,9 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
 
 
         static childContextTypes = {
-            appendStyle: React.PropTypes.func,
-            removeStyle: React.PropTypes.func,
-            getStyle: React.PropTypes.func
+            appendStyle: PropTypes.func,
+            removeStyle: PropTypes.func,
+            getStyle: PropTypes.func
         }
 
         getChildContext = function () {
