@@ -62,7 +62,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             super(props, context)
 
             this.state = {}
-            this.classNameList = []
+            this.classNameWrapper = []
             this.styles = {}
         }
 
@@ -70,12 +70,8 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
 
             styles = stylesHandleWapperCssLoader(styles)
             styles.forEach((style) => {
-                this.classNameList.push(style.wrapper)
+                this.classNameWrapper.push(style.wrapper)
             })
-
-            if (this.props.className) {
-                this.classNameList.push(this.props.className)
-            }
 
             this.context.appendStyle(styles)
         }
@@ -92,7 +88,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             }
 
             return (
-                <StyleWrappedComponent {...props} className={this.classNameList.join(' ')}>
+                <StyleWrappedComponent {...props} className={this.classNameWrapper.concat(this.props.className || '').join(' ')}>
                     {this.props.children}
                 </StyleWrappedComponent>
             )
