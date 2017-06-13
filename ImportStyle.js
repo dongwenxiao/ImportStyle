@@ -88,7 +88,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             }
 
             return (
-                <StyleWrappedComponent {...props} className={this.classNameWrapper.concat(this.props.className || '').join(' ')}>
+                <StyleWrappedComponent {...props} className={this.classNameWrapper.concat(this.props.className).join(' ')}>
                     {this.props.children}
                 </StyleWrappedComponent>
             )
