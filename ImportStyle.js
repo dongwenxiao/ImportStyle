@@ -73,11 +73,17 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
                 this.classNameWrapper.push(style.wrapper)
             })
 
-            this.context.appendStyle(styles)
+            if (this.context && this.context.appendStyle)
+                this.context.appendStyle(styles)
+            else if (__DEV__) {
+                console.warn(`It seems that a component has no \`appendStyle\` function in \`context\`. Have you use \`ImportStyleRoot\` to the root component?`)
+                console.warn('Related element: ', this)
+            }
         }
 
         componentWillUnmount () {
-            this.context.removeStyle(styles)
+            if (this.context && this.context.removeStyle)
+                this.context.removeStyle(styles)
         }
 
         render () {
