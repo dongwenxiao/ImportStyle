@@ -82,7 +82,8 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
         }
 
         componentWillUnmount() {
-            this.context.removeStyle(styles)
+            if (this.context && this.context.removeStyle)
+                this.context.removeStyle(styles)
         }
 
         render() {
