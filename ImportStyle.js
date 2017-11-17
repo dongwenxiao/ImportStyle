@@ -33,18 +33,18 @@ class StyleContainer extends Component {
         getStyle: PropTypes.func
     }
 
-    render () {
+    render() {
         const styles = this.context.getStyle()
 
         let styleTagsString = ''
-        for(let name in styles){
+        for (let name in styles) {
             let id = name
             let s = removeStyleDot(styles[name].css)
             styleTagsString += `<style id=${id}>${s}</style>`
         }
 
         return (
-            <div id="styleCollection" dangerouslySetInnerHTML={{__html: styleTagsString}}></div>
+            <div id="styleCollection" dangerouslySetInnerHTML={{ __html: styleTagsString }}></div>
         )
     }
 }
@@ -58,7 +58,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             removeStyle: PropTypes.func
         }
 
-        constructor (props, context) {
+        constructor(props, context) {
             super(props, context)
 
             this.state = {}
@@ -66,7 +66,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             this.styles = {}
         }
 
-        componentWillMount () {
+        componentWillMount() {
 
             styles = stylesHandleWapperCssLoader(styles)
             styles.forEach((style) => {
@@ -81,12 +81,11 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             }
         }
 
-        componentWillUnmount () {
-            if (this.context && this.context.removeStyle)
-                this.context.removeStyle(styles)
+        componentWillUnmount() {
+            this.context.removeStyle(styles)
         }
 
-        render () {
+        render() {
 
             const props = {
                 ...this.props,
@@ -108,18 +107,18 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
 
     class ImportStyleRoot extends Component {
 
-        constructor (props) {
+        constructor(props) {
             super(props)
 
             this.styleMap = {}
 
             this.checkAndWriteStyleToHeadTag = () => {
 
-                for( let key in this.styleMap){
+                for (let key in this.styleMap) {
                     let styleObj = this.styleMap[key]
-                    if(styleObj.ref > 0){
+                    if (styleObj.ref > 0) {
                         // 配置样式
-                        if(!document.getElementById(key)){
+                        if (!document.getElementById(key)) {
                             let styleTag = document.createElement('style')
                             styleTag.innerHTML = removeStyleDot(styleObj.css)
                             styleTag.setAttribute('id', key)
@@ -127,7 +126,7 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
                         }
                     } else {
                         // 移除样式
-                        if(document.getElementById(key)){
+                        if (document.getElementById(key)) {
                             document.getElementById(key).remove()
                         }
                     }
@@ -146,15 +145,15 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
             return {
                 appendStyle: (styles) => {
                     styles.forEach((style) => {
-                        
-                        if(!this.styleMap[style.wrapper]){
+
+                        if (!this.styleMap[style.wrapper]) {
                             this.styleMap[style.wrapper] = {
                                 css: style.css,
                                 ref: 1
                             }
-                        }else{
+                        } else {
                             // 样式引用计数
-                            this.styleMap[style.wrapper].ref ++
+                            this.styleMap[style.wrapper].ref++
                         }
                     })
 
@@ -162,10 +161,10 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
                 },
                 removeStyle: (styles) => {
                     styles.forEach((style) => {
-                        
+
                         // 引用计数减少
-                        if(this.styleMap[style.wrapper]){
-                            this.styleMap[style.wrapper].ref --
+                        if (this.styleMap[style.wrapper]) {
+                            this.styleMap[style.wrapper].ref--
                         }
 
                     })
@@ -176,7 +175,7 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
             }
         }
 
-        render () {
+        render() {
             const props = {
                 ...this.props,
                 ...this.state
@@ -185,7 +184,7 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
             return (
                 <StyleWrappedComponent {...props}>
                     {this.props.children}
-                    { __SERVER__ && <StyleContainer />}
+                    {__SERVER__ && <StyleContainer />}
                 </StyleWrappedComponent>
             )
         }
