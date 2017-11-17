@@ -1,6 +1,6 @@
 {
   "name": "sp-css-import",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Decorator of react component for load css.",
   "main": "ImportStyle.js",
   "scripts": {
