@@ -64,20 +64,17 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             this.state = {}
             this.classNameWrapper = []
             this.styles = {}
-        }
-
-        componentWillMount() {
 
             styles = stylesHandleWapperCssLoader(styles)
             styles.forEach((style) => {
                 this.classNameWrapper.push(style.wrapper)
             })
 
-            if (this.context && this.context.appendStyle)
-                this.context.appendStyle(styles)
+            if (context && typeof context.appendStyle === 'function')
+                context.appendStyle(styles)
             else if (__DEV__) {
                 console.warn(`It seems that a component has no \`appendStyle\` function in \`context\`. Have you use \`ImportStyleRoot\` to the root component?`)
-                console.warn('Related element: ', this)
+                console.warn('Related component: ', this)
             }
         }
 
