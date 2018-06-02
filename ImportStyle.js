@@ -90,8 +90,10 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
                 ...this.state
             }
 
+            this.origin = this.refs.origin
+
             return (
-                <StyleWrappedComponent {...props} className={this.classNameWrapper.concat(this.props.className).join(' ').trim()}>
+                <StyleWrappedComponent ref='origin' {...props} className={this.classNameWrapper.concat(this.props.className).join(' ').trim()}>
                     {this.props.children}
                 </StyleWrappedComponent>
             )
@@ -179,8 +181,10 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
                 ...this.state
             }
 
+            this.origin = this.refs.origin
+
             return (
-                <StyleWrappedComponent {...props}>
+                <StyleWrappedComponent ref='origin' {...props}>
                     {this.props.children}
                     {__SERVER__ && <StyleContainer />}
                 </StyleWrappedComponent>
