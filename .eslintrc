@@ -12,10 +12,12 @@
         "mocha": true,
         "jquery": true
     },
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module",
         "ecmaFeatures": {
+            "classes": true,
             "impliedStrict": true,
             "jsx": true,
             "experimentalObjectRestSpread": true
@@ -26,8 +28,7 @@
         "__DEV__": false,
         "__CLIENT__": false,
         "__SERVER__": false,
-        "__SPA__": false,
-        "__REDUX_STATE__": true
+        "__SPA__": false
     },
     "settings": {
         "import/ignore": [
