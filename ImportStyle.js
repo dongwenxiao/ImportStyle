@@ -99,6 +99,7 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
                     // ref={el => this.origin = el}
                     className={this.classNameWrapper.concat(this.props.className).join(' ').trim()}
                     children={this.props.children}
+                    data-class-name={this.classNameWrapper.join(' ')}
                 />
             )
         }
