@@ -2,6 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import hoistStatics from 'hoist-non-react-statics'
 
+import {
+    append as appendStyle,
+    remove as removeStyle,
+} from 'koot/React/styles'
+
 /*
 ImportStyle         适用于普通组件
 ImportStyleRoot     适用于最外层组件
@@ -70,8 +75,8 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
                 this.classNameWrapper.push(style.wrapper)
             })
 
-            if (context && typeof context.appendStyle === 'function')
-                context.appendStyle(styles)
+            if (typeof appendStyle === 'function')
+                appendStyle(styles)
             else if (__DEV__) {
                 console.warn(`It seems that a component has no \`appendStyle\` function in \`context\`. Have you use \`ImportStyleRoot\` to the root component?`)
                 console.warn('Related component: ', this)
@@ -79,8 +84,8 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
         }
 
         componentWillUnmount() {
-            if (this.context && this.context.removeStyle)
-                this.context.removeStyle(styles)
+            if (typeof removeStyle === 'function')
+                removeStyle(styles)
         }
 
         render() {
