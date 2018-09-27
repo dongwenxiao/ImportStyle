@@ -5,6 +5,7 @@ import hoistStatics from 'hoist-non-react-statics'
 import {
     append as appendStyle,
     remove as removeStyle,
+    get as getStyle,
 } from 'koot/React/styles'
 
 /*
@@ -96,6 +97,9 @@ export const ImportStyle = (styles) => (StyleWrappedComponent) => {
             }
 
             // this.origin = this.refs.origin
+            if (__CLIENT__ && this.classNameWrapper instanceof HTMLElement) {
+                this.classNameWrapper = [this.classNameWrapper.getAttribute('id')]
+            }
 
             return (
                 <StyleWrappedComponent
@@ -120,28 +124,28 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
         constructor(props) {
             super(props)
 
-            this.styleMap = {}
+            // this.styleMap = {}
 
-            this.checkAndWriteStyleToHeadTag = () => {
+            // this.checkAndWriteStyleToHeadTag = () => {
 
-                for (let key in this.styleMap) {
-                    let styleObj = this.styleMap[key]
-                    if (styleObj.ref > 0) {
-                        // 配置样式
-                        if (!document.getElementById(key)) {
-                            let styleTag = document.createElement('style')
-                            styleTag.innerHTML = removeStyleDot(styleObj.css)
-                            styleTag.setAttribute('id', key)
-                            document.getElementsByTagName('head')[0].appendChild(styleTag)
-                        }
-                    } else {
-                        // 移除样式
-                        if (document.getElementById(key)) {
-                            document.getElementById(key).remove()
-                        }
-                    }
-                }
-            }
+            //     for (let key in this.styleMap) {
+            //         let styleObj = this.styleMap[key]
+            //         if (styleObj.ref > 0) {
+            //             // 配置样式
+            //             if (!document.getElementById(key)) {
+            //                 let styleTag = document.createElement('style')
+            //                 styleTag.innerHTML = removeStyleDot(styleObj.css)
+            //                 styleTag.setAttribute('id', key)
+            //                 document.getElementsByTagName('head')[0].appendChild(styleTag)
+            //             }
+            //         } else {
+            //             // 移除样式
+            //             if (document.getElementById(key)) {
+            //                 document.getElementById(key).remove()
+            //             }
+            //         }
+            //     }
+            // }
         }
 
 
@@ -153,35 +157,9 @@ export const ImportStyleRoot = () => (StyleWrappedComponent) => {
 
         getChildContext = function () {
             return {
-                appendStyle: (styles) => {
-                    styles.forEach((style) => {
-
-                        if (!this.styleMap[style.wrapper]) {
-                            this.styleMap[style.wrapper] = {
-                                css: style.css,
-                                ref: 1
-                            }
-                        } else {
-                            // 样式引用计数
-                            this.styleMap[style.wrapper].ref++
-                        }
-                    })
-
-                    __CLIENT__ && this.checkAndWriteStyleToHeadTag()
-                },
-                removeStyle: (styles) => {
-                    styles.forEach((style) => {
-
-                        // 引用计数减少
-                        if (this.styleMap[style.wrapper]) {
-                            this.styleMap[style.wrapper].ref--
-                        }
-
-                    })
-                },
-                getStyle: () => {
-                    return this.styleMap
-                }
+                appendStyle,
+                removeStyle,
+                getStyle
             }
         }
 
