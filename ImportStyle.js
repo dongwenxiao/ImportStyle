@@ -1,209 +1,62 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import hoistStatics from 'hoist-non-react-statics'
 
 import {
     append as appendStyle,
     remove as removeStyle,
-    get as getStyle,
 } from 'koot/React/styles'
 
-/*
-ImportStyle         适用于普通组件
-ImportStyleRoot     适用于最外层组件
-*/
+export const ImportStyle = (_styles) => (StyleWrappedComponent) => {
 
-// from:https://github.com/jserz/js_piece/blob/master/DOM/ChildNode/remove()/remove().md
-if (__CLIENT__) {
-    (function (arr) {
-        arr.forEach(function (item) {
-            if (item.hasOwnProperty('remove')) {
-                return;
-            }
-            Object.defineProperty(item, 'remove', {
-                configurable: true,
-                enumerable: true,
-                writable: true,
-                value: function remove() {
-                    this.parentNode.removeChild(this);
-                }
-            });
-        });
-    })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
-}
+    const styles = (!Array.isArray(_styles) ? [_styles] : styles).filter(obj => (
+        typeof obj === 'object' && typeof obj.wrapper === 'string'
+    ))
 
-class StyleContainer extends Component {
-
-    static contextTypes = {
-        appendStyle: PropTypes.func,
-        getStyle: PropTypes.func
-    }
-
-    render() {
-        const styles = this.context.getStyle()
-
-        let styleTagsString = ''
-        for (let name in styles) {
-            let id = name
-            let s = removeStyleDot(styles[name].css)
-            styleTagsString += `<style id=${id}>${s}</style>`
-        }
-
-        return (
-            <div id="styleCollection" dangerouslySetInnerHTML={{ __html: styleTagsString }}></div>
-        )
-    }
-}
-
-export const ImportStyle = (styles) => (StyleWrappedComponent) => {
+    const hasStyles = (
+        Array.isArray(styles) &&
+        styles.length > 0
+    )
 
     class ImportStyle extends Component {
 
-        static contextTypes = {
-            appendStyle: PropTypes.func,
-            removeStyle: PropTypes.func
-        }
+        constructor(props) {
+            super(props)
 
-        constructor(props, context) {
-            super(props, context)
-
-            this.state = {}
-            this.classNameWrapper = []
-            this.styles = {}
-
-            styles = stylesHandleWapperCssLoader(styles)
-            styles.forEach((style) => {
-                this.classNameWrapper.push(style.wrapper)
-            })
-
-            if (typeof appendStyle === 'function')
+            if (hasStyles) {
+                this.kootClassNames = styles.map(obj => obj.wrapper)
                 appendStyle(styles)
-            else if (__DEV__) {
-                console.warn(`It seems that a component has no \`appendStyle\` function in \`context\`. Have you use \`ImportStyleRoot\` to the root component?`)
-                console.warn('Related component: ', this)
+                // console.log('----------')
+                // console.log('styles', styles)
+                // console.log('theStyles', theStyles)
+                // console.log('this.classNameWrapper', this.classNameWrapper)
+                // console.log('----------')
             }
         }
 
         componentWillUnmount() {
-            if (typeof removeStyle === 'function')
+            if (hasStyles) {
                 removeStyle(styles)
+            }
         }
 
         render() {
-
-            const props = {
-                ...this.props,
-                ...this.state
+            // console.log('styles', styles)
+            // console.log('this', this)
+            // console.log('this.kootClassNames', this.kootClassNames)
+            // console.log('this.props.className', this.props.className)
+            if (__CLIENT__ && this.kootClassNames instanceof HTMLElement) {
+                // console.log(this.kootClassNames)
+                this.kootClassNames = [this.kootClassNames.getAttribute('id')]
             }
-
-            // this.origin = this.refs.origin
-            if (__CLIENT__ && this.classNameWrapper instanceof HTMLElement) {
-                this.classNameWrapper = [this.classNameWrapper.getAttribute('id')]
-            }
-
-            return (
-                <StyleWrappedComponent
-                    // ref='origin'
-                    {...props}
-                    // ref={el => this.origin = el}
-                    className={this.classNameWrapper.concat(this.props.className).join(' ').trim()}
-                    children={this.props.children}
-                    data-class-name={this.classNameWrapper.join(' ')}
-                />
-            )
+            const props = Object.assign({}, this.props, {
+                className: this.kootClassNames.concat(this.props.className).join(' ').trim(),
+                "data-class-name": this.kootClassNames.join(' ').trim(),
+            })
+            return <WrappedComponent {...props} />
         }
     }
 
     return hoistStatics(ImportStyle, StyleWrappedComponent)
 }
 
-export const ImportStyleRoot = () => (StyleWrappedComponent) => {
-
-    class ImportStyleRoot extends Component {
-
-        constructor(props) {
-            super(props)
-
-            // this.styleMap = {}
-
-            // this.checkAndWriteStyleToHeadTag = () => {
-
-            //     for (let key in this.styleMap) {
-            //         let styleObj = this.styleMap[key]
-            //         if (styleObj.ref > 0) {
-            //             // 配置样式
-            //             if (!document.getElementById(key)) {
-            //                 let styleTag = document.createElement('style')
-            //                 styleTag.innerHTML = removeStyleDot(styleObj.css)
-            //                 styleTag.setAttribute('id', key)
-            //                 document.getElementsByTagName('head')[0].appendChild(styleTag)
-            //             }
-            //         } else {
-            //             // 移除样式
-            //             if (document.getElementById(key)) {
-            //                 document.getElementById(key).remove()
-            //             }
-            //         }
-            //     }
-            // }
-        }
-
-
-        static childContextTypes = {
-            appendStyle: PropTypes.func,
-            removeStyle: PropTypes.func,
-            getStyle: PropTypes.func
-        }
-
-        getChildContext = function () {
-            return {
-                appendStyle,
-                removeStyle,
-                getStyle
-            }
-        }
-
-        render() {
-            const props = {
-                ...this.props,
-                ...this.state
-            }
-
-            // this.origin = this.refs.origin
-
-            return (
-                <StyleWrappedComponent
-                    // ref='origin'
-                    // ref={el => this.origin = el}
-                    {...props}
-                >
-                    {this.props.children}
-                    {__SERVER__ && <StyleContainer />}
-                </StyleWrappedComponent>
-            )
-        }
-    }
-
-    return ImportStyleRoot
-}
-
-
-// 统一处理，把string,object 都转化成array
-const stylesHandleWapperCssLoader = (styles) => {
-
-    // 如果是对象
-    if (typeof styles === 'object' && !styles.length) {
-        styles = [styles]
-    }
-
-    if (typeof styles === 'object' && styles.length) {
-        return styles
-    }
-
-    throw 'stylesHandleWapperCssLoader() styles type must be array or object'
-}
-
-// 删除样式字符前后引号
-// const removeStyleDot = (css) => css.substr(1, css.length - 2)
-// 新版本的 wapper-style-loader 已经调，不需要做这步处理
-const removeStyleDot = (css) => css
+export default ImportStyle
