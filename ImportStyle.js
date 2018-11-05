@@ -6,7 +6,7 @@ import {
     remove as removeStyle,
 } from 'koot/React/styles'
 
-export const ImportStyle = (_styles) => (StyleWrappedComponent) => {
+export const ImportStyle = (_styles) => (WrappedComponent) => {
 
     const styles = (!Array.isArray(_styles) ? [_styles] : styles).filter(obj => (
         typeof obj === 'object' && typeof obj.wrapper === 'string'
@@ -56,7 +56,7 @@ export const ImportStyle = (_styles) => (StyleWrappedComponent) => {
         }
     }
 
-    return hoistStatics(ImportStyle, StyleWrappedComponent)
+    return hoistStatics(ImportStyle, WrappedComponent)
 }
 
 export default ImportStyle
