@@ -1,6 +1,6 @@
 {
     "name": "sp-css-import",
-    "version": "3.0.1",
+    "version": "4.0.0",
     "description": "Decorator of react component for load css.",
     "main": "ImportStyle.js",
     "scripts": {
@@ -27,8 +27,7 @@
         "hoist-non-react-statics": "~3.0.1"
     },
     "peerDependencies": {
-        "react": ">=16",
-        "prop-types": ">=15.6"
+        "koot": ">=0.7"
     },
     "devDependencies": {
         "eslint": "^5.3.0",

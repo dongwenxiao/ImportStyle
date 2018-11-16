@@ -4,6 +4,7 @@ import hoistStatics from 'hoist-non-react-statics'
 import {
     append as appendStyle,
     remove as removeStyle,
+    StyleMapContext,
 } from 'koot/React/styles'
 
 export const ImportStyle = (_styles) => (WrappedComponent) => {
@@ -19,12 +20,14 @@ export const ImportStyle = (_styles) => (WrappedComponent) => {
 
     class ImportStyle extends Component {
 
-        constructor(props) {
-            super(props)
+        static contextType = StyleMapContext
+
+        constructor(props, context) {
+            super(props, context)
 
             if (hasStyles) {
                 this.kootClassNames = styles.map(obj => obj.wrapper)
-                appendStyle(styles)
+                appendStyle(context, styles)
                 // console.log('----------')
                 // console.log('styles', styles)
                 // console.log('theStyles', theStyles)
@@ -35,7 +38,7 @@ export const ImportStyle = (_styles) => (WrappedComponent) => {
 
         componentWillUnmount() {
             if (hasStyles) {
-                removeStyle(styles)
+                removeStyle(this.context, styles)
             }
         }
 
